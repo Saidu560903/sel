@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>布農 Is’aang（心）氣象站</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for premium typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+        }
+        
+        /* Traditional Bunun diamond weaving pattern background simulation */
+        .bunun-pattern {
+            background-color: #f97316;
+            background-image: linear-gradient(135deg, #7c2d12 25%, transparent 25%), 
+                              linear-gradient(225deg, #7c2d12 25%, transparent 25%), 
+                              linear-gradient(45deg, #7c2d12 25%, transparent 25%), 
+                              linear-gradient(315deg, #7c2d12 25%, #f97316 25%);
+            background-position: 10px 0, 10px 0, 0 0, 0 0;
+            background-size: 20px 20px;
+            background-repeat: repeat;
+            opacity: 0.08;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism containers for premium look */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(251, 146, 60, 0.2);
+            box-shadow: 0 20px 40px -15px rgba(124, 45, 18, 0.15);
+        }
+
+        /* Smooth page transition animations */
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sun glow effect */
+        .glow-sunny {
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from { transform: scale(1); box-shadow: 0 0 25px rgba(251, 191, 36, 0.5); }
+            to { transform: scale(1.05); box-shadow: 0 0 45px rgba(251, 191, 36, 0.8); }
+        }
+
+        /* Pulse wave for cultural elements */
+        .bunun-diamond-loader {
+            width: 30px;
+            height: 30px;
+            background: #c2410c;
+            transform: rotate(45deg);
+            animation: rhombus-pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes rhombus-pulse {
+            0%, 100% { transform: rotate(45deg) scale(0.8); opacity: 0.5; }
+            50% { transform: rotate(45deg) scale(1.2); opacity: 1; }
+        }
+
+        /* Hide scrollbars elegantly */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(251, 146, 60, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(124, 45, 18, 0.2);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(124, 45, 18, 0.4);
+        }
+    </style>
+</head>
+<body class="min-h-screen relative flex items-center justify-center p-4 sm:p-6 md:p-8 overflow-x-hidden">
+    
+    <!-- Traditional pattern background layer -->
+    <div class="bunun-pattern"></div>
+
+    <!-- Main Interactive Card Frame -->
+    <div id="app-container" class="relative z-10 w-full max-w-2xl min-h-[640px] flex flex-col justify-between glass-card rounded-[32px] p-6 sm:p-10 transition-all duration-500 overflow-hidden">
+        
+        <!-- Top Navigation / Progress Bar -->
+        <div class="w-full flex items-center justify-between mb-6 border-b border-orange-100 pb-4">
+            <div class="flex items-center gap-3">
+                <!-- Tribal Rhombus Icon -->
+                <div class="w-6 h-6 bg-orange-700 transform rotate-45 flex items-center justify-center shadow-sm">
+                    <span class="text-[8px] text-white font-bold -rotate-45">B</span>
+                </div>
+                <span class="text-sm font-bold tracking-wider text-orange-950 uppercase">Is’aang Weather Station</span>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <span id="current-step-indicator" class="text-xs bg-orange-100 text-orange-800 font-bold px-3 py-1 rounded-full">
+                    Miqumisang!
+                </span>
+            </div>
+        </div>
+
+        <!-- Dynamic Body injected by JavaScript -->
+        <div id="game-body" class="flex-grow flex flex-col justify-center fade-in">
+            <!-- Loading Initializer -->
+            <div class="text-center py-20 flex flex-col items-center justify-center">
+                <div class="bunun-diamond-loader mb-6"></div>
+                <p class="text-orange-900 font-medium animate-pulse">正在調製布農的心靈氣象...</p>
+            </div>
+        </div>
+
+        <!-- App Footer (Cultural reminder / Attribution) -->
+        <div class="w-full mt-8 pt-4 border-t border-orange-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-orange-800/70 font-medium">
+            <div class="flex items-center gap-2">
+                <span>Mapakadaidaz 精神：愛與被愛的溫暖所在</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <span>巒群布農語課堂教材 Uninang!</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Canvas for Certificate Generation -->
+    <canvas id="certCanvas" class="hidden"></canvas>
+
+    <!-- Custom Feedback Alert Modal -->
+    <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border-4 border-orange-600 scale-95 transition-all duration-300 transform" id="modal-content">
+            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-2xl" id="modal-emoji">🧡</span>
+            </div>
+            <h3 class="text-lg font-bold text-orange-950 mb-2" id="modal-title">提醒</h3>
+            <p class="text-sm text-orange-800/80 mb-6" id="modal-body">內容</p>
+            <button onclick="closeModal()" class="w-full bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-bold py-3 rounded-2xl shadow-md transition">
+                Mahu’as (我知道了)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Audio Synthesizer using Web Audio API to prevent external file reliance
+        const Is_aangAudio = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playSuccess() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.35); // C6
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            },
+            playWarm() {
+                this.init();
+                const now = this.ctx.currentTime;
+                // Rich pentatonic warm melody (Sunny mood)
+                const notes = [261.63, 329.63, 392.00, 523.25]; // C4 - E4 - G4 - C5
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+                    gain.gain.setValueAtTime(0.1, now + idx * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.12 + 0.4);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + idx * 0.12);
+                    osc.stop(now + idx * 0.12 + 0.4);
+                });
+            },
+            playCalm() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc1 = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc1.type = 'sine';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(349.23, now); // F4
+                osc2.frequency.setValueAtTime(440.00, now); // A4
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.8);
+                osc2.stop(now + 0.8);
+            },
+            playRain() {
+                this.init();
+                const now = this.ctx.currentTime;
+                // Simulated random dripping drops
+                for(let i = 0; i < 4; i++) {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800 + Math.random() * 600, now + i * 0.15);
+                    gain.gain.setValueAtTime(0.04, now + i * 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.12);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.15);
+                    osc.stop(now + i * 0.15 + 0.15);
+                }
+            },
+            playStorm() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(85, now);
+                osc.frequency.linearRampToValueAtTime(55, now + 0.8);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.8);
+            }
+        };
+
+        // Complete educational dataset
+        const weatherData = [
+            { 
+                id: 'sun', 
+                label: 'Mataisqang', 
+                chineseLabel: '晴天 / 明亮',
+                color: 'bg-amber-400 text-amber-950 border-amber-300 hover:bg-amber-300', 
+                desc: '感覺充滿力量、很快樂 (Manahip)',
+                icon: `<svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.46 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg>`,
+                sound: 'playWarm',
+                emoji: '☀️',
+                bununEmotion: 'Manahip'
+            },
+            { 
+                id: 'cloud', 
+                label: 'Luhum', 
+                chineseLabel: '多雲 / 陰天',
+                color: 'bg-indigo-200 text-indigo-950 border-indigo-200 hover:bg-indigo-100', 
+                desc: '有點平靜 (Pinitia) 或有些微的擔心',
+                icon: `<svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z"></path></svg>`,
+                sound: 'playCalm',
+                emoji: '⛅',
+                bununEmotion: 'Pinitia'
+            },
+            { 
+                id: 'rain', 
+                label: 'Qudanan', 
+                chineseLabel: '雨天 / 溼冷',
+                color: 'bg-sky-500 text-white border-sky-400 hover:bg-sky-400', 
+                desc: '感覺有些傷心 (Masalpu) 或疲累',
+                icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-11.314l.707.707m11.314 11.314l.707-.707M12 5a7 7 0 00-7 7h14a7 7 0 00-7-7zM20 14l-2 2M6 14l-2 2M10 16l-2 2M14 16l-2 2"></path></svg>`,
+                sound: 'playRain',
+                emoji: '🌧️',
+                bununEmotion: 'Masalpu'
+            },
+            { 
+                id: 'storm', 
+                label: 'Balivusan', 
+                chineseLabel: '颱風 / 狂風',
+                color: 'bg-red-500 text-white border-red-400 hover:bg-red-400', 
+                desc: '感覺生氣 (Mahau) 或混亂複雜',
+                icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`,
+                sound: 'playStorm',
+                emoji: '🌀',
+                bununEmotion: 'Mahau'
+            }
+        ];
+
+        // Mapakadaidaz support pool
+        const blessingWords = [
+            {
+                phrase: 'Asa tu mapakadaidaz.',
+                translation: '我們要互相友愛、溫暖對待彼此。',
+                emoji: '🤝'
+            },
+            {
+                phrase: 'Maqtu’ang asu malisvala.',
+                translation: '祝你平安、讓心靈得到和諧安寧。',
+                emoji: '🕊️'
+            },
+            {
+                phrase: 'Matinmananu! Kakunang isuu is’aang.',
+                translation: '一起努力加油！守護好你的心。',
+                emoji: '🔥'
+            }
+        ];
+
+        // Localized interactive State
+        let state = {
+            step: 'welcome', // welcome, track-select, checkin, game-activity, support, certificate
+            track: '', // 'low' (visual matching) or 'high' (self-reflection text)
+            weather: null, // full weather object
+            reflectionText: '', // for high track
+            matchingScore: 0, // for low track game
+            selectedBlessing: null, // final given/received blessing
+            studentName: ''
+        };
+
+        // Elegant Step Switcher & Renderer
+        function renderApp() {
+            const body = document.getElementById('game-body');
+            const indicator = document.getElementById('current-step-indicator');
+            body.className = "flex-grow flex flex-col justify-center fade-in";
+            
+            // Clear current layout
+            body.innerHTML = '';
+
+            if (state.step === 'welcome') {
+                indicator.innerText = 'Miqumisang! 建立連結';
+                body.innerHTML = `
+                    <div class="text-center py-4 flex flex-col items-center">
+                        <!-- Traditional Weaving Symbol Header -->
+                        <div class="flex justify-center gap-1.5 mb-6">
+                            <div class="w-4 h-4 bg-orange-700 transform rotate-45"></div>
+                            <div class="w-4 h-4 bg-orange-500 transform rotate-45"></div>
+                            <div class="w-4 h-4 bg-yellow-500 transform rotate-45"></div>
+                            <div class="w-4 h-4 bg-orange-500 transform rotate-45"></div>
+                            <div class="w-4 h-4 bg-orange-700 transform rotate-45"></div>
+                        </div>
+
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-orange-950 tracking-tight leading-tight mb-2">
+                            布農 Is’aang 氣象站
+                        </h1>
+                        <p class="text-orange-700 font-bold text-lg mb-6 tracking-wide">Bunun tu Is’aang (布農族的心靈氣象)</p>
+                        
+                        <div class="bg-orange-50/80 border-2 border-orange-100 rounded-2xl p-5 mb-8 text-left max-w-lg">
+                            <h3 class="font-bold text-orange-900 text-base mb-2 flex items-center gap-2">
+                                <span>🌾</span> 什麼是 Miqumisang?
+                            </h3>
+                            <p class="text-sm text-orange-950/80 leading-relaxed">
+                                在布農族語中，這句問候絕不只是「你好」，它的深層內涵是：<strong class="text-orange-700">「祝福彼此，願我們都好好活著、勇敢活著。」</strong> 
+                                讓我們以這份最尊貴、溫柔的祝福開始今天的內在探索之旅。
+                            </p>
+                        </div>
+
+                        <!-- Touch-friendly primary CTA -->
+                        <button onclick="playSound('playSuccess'); nextStep('track-select');" class="w-full max-w-sm bg-orange-600 hover:bg-orange-700 text-white text-base font-black py-4 px-8 rounded-2xl shadow-lg transition-transform active:scale-[0.98] tracking-widest flex items-center justify-center gap-2">
+                            <span>Miqumisang! 點擊開始</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                        </button>
+                    </div>
+                `;
+            }
+
+            else if (state.step === 'track-select') {
+                indicator.innerText = '選擇引導模式';
+                body.innerHTML = `
+                    <div class="text-center py-2 flex flex-col items-center">
+                        <h2 class="text-2xl font-bold text-orange-950 mb-3">
+                            請選擇適合你年級的心情儀表板
+                        </h2>
+                        <p class="text-orange-800/80 text-sm mb-8">我們將以不同的布農語遊戲帶領你探索內心</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-xl">
+                            <!-- Low Grade -->
+                            <div onclick="selectTrack('low')" class="p-6 border-2 border-orange-100 hover:border-orange-400 bg-orange-50/50 hover:bg-white rounded-3xl cursor-pointer transition-all duration-300 flex flex-col items-center text-center group">
+                                <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-2xl">
+                                    🐣
+                                </div>
+                                <h3 class="text-lg font-black text-orange-950 mb-2">小鷹組 (低/中年級)</h3>
+                                <p class="text-xs text-orange-800/80 leading-relaxed mb-4">
+                                    「心情對對碰」<br>學習認識簡單的布農心情單字與大自然天氣的連結。
+                                </p>
+                                <span class="text-xs font-bold bg-orange-100 group-hover:bg-orange-600 group-hover:text-white text-orange-800 px-4 py-1.5 rounded-full transition-colors">
+                                    由此進入
+                                </span>
+                            </div>
+
+                            <!-- High Grade -->
+                            <div onclick="selectTrack('high')" class="p-6 border-2 border-orange-100 hover:border-orange-400 bg-orange-50/50 hover:bg-white rounded-3xl cursor-pointer transition-all duration-300 flex flex-col items-center text-center group">
+                                <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-2xl">
+                                    🦅
+                                </div>
+                                <h3 class="text-lg font-black text-orange-950 mb-2">大鷹組 (中/高年級、國中)</h3>
+                                <p class="text-xs text-orange-800/80 leading-relaxed mb-4">
+                                    「深度覺察與書寫」<br>深度探討情緒的前因後果，用母語寫下你與部落的故事或心情。
+                                </p>
+                                <span class="text-xs font-bold bg-orange-100 group-hover:bg-orange-600 group-hover:text-white text-orange-800 px-4 py-1.5 rounded-full transition-colors">
+                                    由此進入
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            else if (state.step === 'checkin') {
+                indicator.innerText = '自我覺察 Is’aang 天氣';
+                body.innerHTML = `
+                    <div class="text-center py-2">
+                        <span class="text-orange-600 text-xs font-black tracking-widest uppercase mb-1 block">Maku’aq isuu tu is’aang haip?</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-orange-950 mb-3">你今天的心情感覺如何？</h2>
+                        <p class="text-orange-800/70 text-sm mb-6">點擊下方天氣圖標聽一聽情緒的旋律，並選擇與你最接近的狀態：</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
+                            ${weatherData.map(w => `
+                                <div onclick="selectWeather('${w.id}')" class="p-5 border-2 rounded-2xl cursor-pointer transition-all duration-300 flex items-center gap-4 ${w.color} group hover:shadow-md transform hover:-translate-y-0.5 active:scale-95">
+                                    <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center transition-transform group-hover:rotate-12">
+                                        ${w.icon}
+                                    </div>
+                                    <div class="text-left">
+                                        <div class="font-black text-lg tracking-wide flex items-center gap-1.5">
+                                            <span>${w.label}</span>
+                                            <span class="text-sm font-medium opacity-80">(${w.chineseLabel})</span>
+                                        </div>
+                                        <div class="text-xs opacity-90 font-medium leading-normal mt-0.5">${w.desc}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            else if (state.step === 'game-activity') {
+                indicator.innerText = '心情大考驗';
+                if (state.track === 'low') {
+                    // Lower grade matching puzzle game
+                    body.innerHTML = `
+                        <div class="text-center py-2 flex flex-col items-center">
+                            <h2 class="text-2xl font-black text-orange-950 mb-2">心情與單字對對碰</h2>
+                            <p class="text-sm text-orange-800/80 mb-6">請將這張可愛的天氣圖對應正確的「布農心情語彙」吧！</p>
+                            
+                            <div class="bg-amber-50 border-2 border-amber-100 rounded-3xl p-6 mb-6 max-w-sm w-full flex flex-col items-center">
+                                <span class="text-6xl mb-3 animate-bounce">${state.weather.emoji}</span>
+                                <h3 class="text-xl font-extrabold text-orange-900">${state.weather.label} (${state.weather.chineseLabel})</h3>
+                                <p class="text-xs text-orange-800/80 mt-1">${state.weather.desc}</p>
+                            </div>
+
+                            <p class="text-xs font-bold text-orange-950 mb-3">你認為「${state.weather.label}」在布農族中象徵著什麼情緒？</p>
+                            <div class="grid grid-cols-2 gap-3 w-full max-w-md">
+                                ${weatherData.map(w => `
+                                    <button onclick="checkAnswer('${w.bununEmotion}')" class="bg-white border-2 border-orange-100 hover:border-orange-500 hover:bg-orange-50 active:scale-95 text-orange-950 font-extrabold py-3 px-4 rounded-xl text-sm transition duration-200">
+                                        ${w.bununEmotion} <span class="block text-xs font-medium text-orange-800/60 mt-0.5">(${w.chineseLabel.split(' / ')[0]})</span>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Higher grade deep self-awareness text reflection
+                    body.innerHTML = `
+                        <div class="text-center py-2 flex flex-col items-center">
+                            <h2 class="text-2xl font-black text-orange-950 mb-2">Is’aang 的成因探索</h2>
+                            <p class="text-sm text-orange-800/80 mb-4">對於當下處在 <span class="text-orange-700 font-bold">${state.weather.label} (${state.weather.emoji})</span> 的你，可以說說原因嗎？</p>
+                            
+                            <div class="bg-orange-50/50 border border-orange-100 p-4 rounded-2xl text-left text-xs mb-4 text-orange-900/90 leading-relaxed max-w-md">
+                                💡 <strong class="text-orange-950">老師建議：</strong> 可以寫下「今天在部落裡遇到的事」、「因為家人的關懷」或者「期待明天的課程」。如果會寫簡單的布農語字詞（例如：Matinmananu 努力、Manahip 快樂）也歡迎融入其中唷！
+                            </div>
+
+                            <div class="w-full max-w-md mb-6">
+                                <label class="block text-left text-xs font-bold text-orange-950 mb-1.5">寫下今日心情探源：</label>
+                                <textarea id="reflection-input" placeholder="例如：今天早上看到彩虹，覺得心裡很明亮快樂。 / because..." class="w-full h-28 p-4 border-2 border-orange-100 focus:border-orange-500 rounded-2xl outline-none text-sm transition-all resize-none shadow-inner" oninput="state.reflectionText = this.value"></textarea>
+                            </div>
+
+                            <button onclick="submitReflection()" class="w-full max-w-sm bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-black py-3.5 rounded-2xl shadow-lg transition tracking-wide">
+                                寫好了，前往 Mapakadaidaz 祝福圈
+                            </button>
+                        </div>
+                    `;
+                    // Pre-fill text area if saved
+                    if(state.reflectionText) {
+                        document.getElementById('reflection-input').value = state.reflectionText;
+                    }
+                }
+            }
+
+            else if (state.step === 'support') {
+                indicator.innerText = 'Mapakadaidaz 祝福圈';
+                body.innerHTML = `
+                    <div class="text-center py-2 flex flex-col items-center">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-xl font-bold mb-3">
+                            💚
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-orange-950 mb-2">Mapakadaidaz! 互相友愛</h2>
+                        <p class="text-sm text-orange-800/80 max-w-md leading-relaxed mb-6">
+                            我們的心在天氣中起伏，但透過彼此分享關懷 (Asa tu mapakadaidaz)，無論多大的風雨都能平安度過。請為自己選一句今天的布農心靈祝福語：
+                        </p>
+
+                        <div class="grid grid-cols-1 gap-3 w-full max-w-md mb-6">
+                            ${blessingWords.map((b, idx) => `
+                                <div onclick="selectBlessing(${idx})" class="p-4 border-2 rounded-2xl cursor-pointer text-left transition-all duration-300 flex items-start gap-3 bg-white hover:border-emerald-500 hover:bg-emerald-50/20 active:scale-[0.99] ${state.selectedBlessing && state.selectedBlessing.phrase === b.phrase ? 'border-emerald-500 bg-emerald-50/50 ring-2 ring-emerald-500/20' : 'border-orange-100'}">
+                                    <span class="text-2xl mt-0.5">${b.emoji}</span>
+                                    <div>
+                                        <h3 class="font-bold text-orange-950 text-base font-serif">${b.phrase}</h3>
+                                        <p class="text-xs text-orange-800/80 mt-1">${b.translation}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <button id="support-next-btn" onclick="goToCertStep()" class="w-full max-w-sm py-4 rounded-2xl font-black text-white transition tracking-widest ${state.selectedBlessing ? 'bg-orange-600 hover:bg-orange-700 active:scale-95 shadow-lg' : 'bg-orange-300 cursor-not-allowed'}" ${!state.selectedBlessing ? 'disabled' : ''}>
+                            領取與製作我的 Is’aang 證書
+                        </button>
+                    </div>
+                `;
+            }
+
+            else if (state.step === 'certificate') {
+                indicator.innerText = '完成簽署並下載';
+                body.innerHTML = `
+                    <div class="text-center py-2 flex flex-col items-center">
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-orange-950 mb-2">領取你的布農心靈氣象證書</h2>
+                        <p class="text-sm text-orange-800/80 mb-6">恭喜完成今日的 SEL 心靈檢核，這是一份證明你用心守護情感的紀錄卡！</p>
+                        
+                        <div class="w-full max-w-sm mb-6 text-left">
+                            <label class="block text-xs font-black text-orange-950 mb-1.5">輸入你在學校或部落的名字（可用羅馬拼音）：</label>
+                            <input type="text" id="userName-input" placeholder="例如：Abus / 華漢" value="${state.studentName}" class="w-full p-4 border-2 border-orange-100 focus:border-orange-500 rounded-2xl outline-none font-bold text-center tracking-wide" oninput="state.studentName = this.value">
+                        </div>
+
+                        <!-- Live Mini Preview -->
+                        <div class="w-full max-w-sm bg-orange-50/50 border-2 border-dashed border-orange-200 rounded-3xl p-5 mb-6 text-left flex flex-col justify-between">
+                            <div>
+                                <span class="text-xs bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded">實時證書資訊</span>
+                                <p class="text-sm font-bold text-orange-950 mt-3 flex items-center gap-2">
+                                    <span>👤 姓名：</span>
+                                    <span id="preview-name" class="text-orange-700 underline font-black">${state.studentName || '未輸入'}</span>
+                                </p>
+                                <p class="text-sm font-bold text-orange-950 mt-1">
+                                    <span>🌤️ 心情天氣：</span>
+                                    <span class="text-amber-700">${state.weather ? state.weather.label + ' ' + state.weather.emoji : ''}</span>
+                                </p>
+                                <p class="text-sm font-bold text-orange-950 mt-1">
+                                    <span>💖 實踐力量：</span>
+                                    <span class="text-emerald-700 font-serif font-bold text-xs">${state.selectedBlessing ? state.selectedBlessing.phrase : ''}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
+                            <button onclick="goBack('support')" class="w-full sm:w-1/3 bg-orange-100 hover:bg-orange-200 text-orange-900 font-bold py-3.5 rounded-2xl text-sm transition">
+                                上一步
+                            </button>
+                            <button onclick="downloadCert()" class="w-full sm:w-2/3 bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-black py-3.5 rounded-2xl shadow-lg transition tracking-wide flex items-center justify-center gap-1.5">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                <span>下載專屬證書</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function nextStep(step) {
+            state.step = step;
+            renderApp();
+        }
+
+        function goBack(step) {
+            state.step = step;
+            renderApp();
+        }
+
+        function selectTrack(track) {
+            state.track = track;
+            playSound('playSuccess');
+            nextStep('checkin');
+        }
+
+        function selectWeather(weatherId) {
+            const found = weatherData.find(w => w.id === weatherId);
+            state.weather = found;
+            
+            // Trigger customized Web Audio synthesizer play
+            if(found && found.sound && typeof Is_aangAudio[found.sound] === 'function') {
+                Is_aangAudio[found.sound]();
+            }
+
+            nextStep('game-activity');
+        }
+
+        // Check Match Answer Game (Low track)
+        function checkAnswer(emotion) {
+            if(emotion === state.weather.bununEmotion) {
+                state.matchingScore += 10;
+                playSound('playSuccess');
+                showModal('答對囉！Tastu kaniup! 🎉', `你非常了解「${state.weather.label}」與「${state.weather.bununEmotion}」的內心聯結。真是棒的一隻小老鷹！`, '🌟');
+                setTimeout(() => {
+                    nextStep('support');
+                }, 1500);
+            } else {
+                playSound('playCalm');
+                showModal('差一點點喔！再試一次 💪', `再觀察看看，「${state.weather.label}」在布農語中代表的是哪個呢？試試其他卡片。`, '🧐');
+            }
+        }
+
+        function submitReflection() {
+            if(!state.reflectionText.trim()) {
+                showModal('尚未輸入感受', '請簡單寫幾個字，即使是一句話，也是自己與自己真實對話的重要開始喔。', '🧡');
+                return;
+            }
+            playSound('playSuccess');
+            nextStep('support');
+        }
+
+        function selectBlessing(idx) {
+            state.selectedBlessing = blessingWords[idx];
+            playSound('playSuccess');
+            renderApp();
+        }
+
+        function goToCertStep() {
+            if(!state.selectedBlessing) return;
+            nextStep('certificate');
+        }
+
+        // Audio proxy helper
+        function playSound(type) {
+            if(typeof Is_aangAudio[type] === 'function') {
+                Is_aangAudio[type]();
+            }
+        }
+
+        // Custom modal controls
+        function showModal(title, body, emoji) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerText = body;
+            document.getElementById('modal-emoji').innerText = emoji || '🧡';
+            
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('modal-content');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const content = document.getElementById('modal-content');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                document.getElementById('custom-modal').classList.add('hidden');
+            }, 150);
+        }
+
+        function downloadCert() {
+            const name = state.studentName.trim() || '課堂小老鷹';
+            const canvas = document.getElementById('certCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Premium design resolution: 1200 x 800
+            canvas.width = 1200;
+            canvas.height = 800;
+            
+            // 1. Solid Ivory Warm Earth Background
+            ctx.fillStyle = '#fffbeb';
+            ctx.fillRect(0, 0, 1200, 800);
+            
+            // 2. Draw traditional Bunun geometric rhombuses borders (Tus-a patterns)
+            const margin = 35;
+            const borderWidth = 12;
+            
+            // Outer Orange Border
+            ctx.strokeStyle = '#c2410c';
+            ctx.lineWidth = borderWidth;
+            ctx.strokeRect(margin, margin, 1200 - margin*2, 800 - margin*2);
+            
+            // Inner Fine Border
+            ctx.strokeStyle = '#ea580c';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(margin + 18, margin + 18, 1200 - margin*2 - 36, 800 - margin*2 - 36);
+
+            // Draw side triangles/rhombuses as traditional Bunun patterns
+            ctx.fillStyle = '#7c2d12'; // Dark rich brown/red
+            const drawDiamondPattern = () => {
+                // Top border repeated diamonds
+                for(let i = 80; i < 1120; i += 60) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 48);
+                    ctx.lineTo(i + 15, 60);
+                    ctx.lineTo(i, 72);
+                    ctx.lineTo(i - 15, 60);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                // Bottom border repeated diamonds
+                for(let i = 80; i < 1120; i += 60) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 800 - 48);
+                    ctx.lineTo(i + 15, 800 - 60);
+                    ctx.lineTo(i, 800 - 72);
+                    ctx.lineTo(i - 15, 800 - 60);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            };
+            drawDiamondPattern();
+            
+            // 3. Header Texts
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#7c2d12';
+            ctx.font = '900 48px sans-serif';
+            ctx.fillText('布農 Is’aang（心）氣象站', 600, 150);
+
+            ctx.fillStyle = '#ea580c';
+            ctx.font = 'bold 24px sans-serif';
+            ctx.fillText('Miqumisang! 祝福彼此好好活著', 600, 195);
+            
+            // Horizontal Separator with micro center diamond
+            ctx.strokeStyle = '#fed7aa';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(350, 230);
+            ctx.lineTo(850, 230);
+            ctx.stroke();
+
+            ctx.fillStyle = '#7c2d12';
+            ctx.beginPath();
+            ctx.moveTo(600, 222);
+            ctx.lineTo(608, 230);
+            ctx.lineTo(600, 238);
+            ctx.lineTo(592, 230);
+            ctx.closePath();
+            ctx.fill();
+
+            // 4. Recipient Name Section
+            ctx.fillStyle = '#1c1917';
+            ctx.font = 'bold 36px sans-serif';
+            ctx.fillText(`${name} 學生 / 同學`, 600, 310);
+
+            ctx.fillStyle = '#44403c';
+            ctx.font = '22px sans-serif';
+            ctx.fillText('今日完成心靈氣象自我檢核與互愛實踐', 600, 360);
+
+            // 5. Emotional / Meteorological data card frame in Certificate
+            ctx.fillStyle = '#fef3c7'; // soft yellow inner card
+            ctx.beginPath();
+            ctx.roundRect(180, 400, 840, 240, 16);
+            ctx.fill();
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Mood details inside the card
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#7c2d12';
+            ctx.font = '900 28px sans-serif';
+            
+            const weatherNameText = state.weather ? `${state.weather.label} (${state.weather.chineseLabel})` : 'Mataisqang';
+            const weatherEmoji = state.weather ? state.weather.emoji : '☀️';
+            ctx.fillText(`${weatherEmoji} 心靈天氣狀態：${weatherNameText}`, 220, 460);
+
+            // Reflection Text wrapping helper
+            ctx.fillStyle = '#451a03';
+            ctx.font = 'normal 20px sans-serif';
+            
+            let reflectionLine = '';
+            if (state.track === 'high' && state.reflectionText.trim()) {
+                reflectionLine = `「我的內心紀錄：${state.reflectionText}」`;
+            } else {
+                reflectionLine = `「實踐低年級配對挑戰，成功識讀布農情緒語彙 ${state.weather ? state.weather.bununEmotion : ''}」`;
+            }
+
+            // Simple text wrap if reflection line is too long
+            const maxWrapWidth = 760;
+            const lines = [];
+            let currentLine = '';
+            for(let n = 0; n < reflectionLine.length; n++) {
+                const char = reflectionLine[n];
+                const testLine = currentLine + char;
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWrapWidth && n > 0) {
+                    lines.push(currentLine);
+                    currentLine = char;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            lines.push(currentLine);
+
+            let textY = 515;
+            lines.slice(0, 2).forEach((l) => {
+                ctx.fillText(l, 220, textY);
+                textY += 30;
+            });
+
+            // Selected Mapakadaidaz Blessing
+            ctx.fillStyle = '#065f46';
+            ctx.font = 'bold 22px sans-serif';
+            const selectedBless = state.selectedBlessing ? `${state.selectedBlessing.emoji} 贈予彼此的祝福：${state.selectedBlessing.phrase} (${state.selectedBlessing.translation})` : '我們要互相愛護。';
+            ctx.fillText(selectedBless, 220, 595);
+
+            // 6. Signature Area / Mapakadaidaz Stamp
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#78350f';
+            ctx.font = 'bold 18px sans-serif';
+            ctx.fillText('Is’aang 心靈氣象站 主持人', 1020, 715);
+            ctx.fillText('認證時間：' + new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' }), 1020, 745);
+
+            // Red Tribal Circle Stamp (Simulated)
+            ctx.strokeStyle = '#b91c1c';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(1070, 715, 45, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(185, 28, 28, 0.1)';
+            ctx.beginPath();
+            ctx.arc(1070, 715, 45, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#b91c1c';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillText('互相友愛', 1070, 712);
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText('Mapakadaidaz', 1070, 728);
+
+            // Trigger Download
+            const link = document.createElement('a');
+            link.download = `Is_aang_Certificate_${name}.png`;
+            // Safe fallback method for iFrames and downloads
+            try {
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                playSound('playSuccess');
+            } catch(e) {
+                showModal('下載失敗', '瀏覽器可能限制了直接下載，建議在手機或平板上長按圖片來存檔或截圖喔！', '😢');
+            }
+        }
+
+        // Initialize App on Window Load
+        window.onload = function() {
+            renderApp();
+        }
+    </script>
+</body>
+</html>
